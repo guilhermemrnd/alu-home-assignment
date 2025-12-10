@@ -5,6 +5,8 @@ import { Database } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
+import { cn } from "@/lib/utils/cn";
+
 import { useProductsData } from "@/hooks/use-products-data";
 
 import { Chat } from "@/components/chat";
@@ -46,7 +48,7 @@ export default function Home() {
               onClick={handleReset}
               variant="destructive"
               size="sm"
-              className="transition-colors hover:bg-red-700 cursor-pointer"
+              className={cn("transition-colors hover:bg-red-700 cursor-pointer")}
             >
               Reset Session
             </Button>

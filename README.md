@@ -33,7 +33,7 @@ Upload files, map columns with AI, preview data, and chat to edit via proposed o
 ### Installation
 1. Clone repo
 2. `npm install`
-3. Copy `.env.local`, add OPENAI_API_KEY
+3. Add `.env.local`, add OPENAI_API_KEY
 4. `npm run dev`
 5. Visit http://localhost:3000
 

@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+import { cn } from "@/lib/utils/cn";
+
 import { ProductFieldName, Mapping } from "@/core/domain/product";
 
 type Props = {
@@ -36,7 +38,7 @@ export function MappingEditor({ headers, mapping, onMappingChange }: Props) {
           {Object.keys(mapping).map((field) => (
             <div
               key={field}
-              className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-50"
+              className={cn("flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-50")}
             >
               <label className="w-32 font-medium text-gray-700">{field.replace(/_/g, " ")}</label>
               <Select

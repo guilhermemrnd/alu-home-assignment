@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MessageCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+
+import { cn } from "@/lib/utils/cn";
 
 type Props = {
   messages: { role: "user" | "assistant"; content: string }[];
@@ -15,6 +17,21 @@ type Props = {
 
 export function Chat({ messages, onSendMessage, isLoading }: Props) {
   const [message, setMessage] = useState("");
+
+  const loadingMessages = [
+    "Evaluating changes...",
+    "Planning data updates...",
+    "Preparing response...",
+  ];
+  const [loadingIndex, setLoadingIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const interval = setInterval(() => {
+      setLoadingIndex((prev) => (prev + 1) % loadingMessages.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -35,18 +52,26 @@ export function Chat({ messages, onSendMessage, isLoading }: Props) {
         <ScrollArea className="mb-4 h-96">
           <div className="flex flex-col space-y-3 px-2">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`rounded-2xl p-3 max-w-[80%] shadow-sm ${m.role === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"}`}>
+              <div
+                key={i}
+                className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl p-3 shadow-sm",
+                    m.role === "user" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+                  )}
+                >
                   <p className="text-sm">{m.content}</p>
                 </div>
               </div>
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="rounded-2xl p-3 bg-gray-100 text-gray-900 max-w-[80%] shadow-sm">
+                <div className={cn("max-w-[80%] rounded-2xl bg-gray-100 p-3 text-gray-900 shadow-sm")}>
                   <div className="flex items-center space-x-2">
                     <Skeleton className="h-4 w-4 rounded-full" />
-                    <span className="text-sm">AI is thinking...</span>
+                    <span className="text-sm">{loadingMessages[loadingIndex]}</span>
                   </div>
                 </div>
               </div>

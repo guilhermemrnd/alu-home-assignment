@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import { cn } from "@/lib/utils/cn";
+
 type Props = {
   onFileChange: (file: File) => void;
   isLoading: boolean;
@@ -43,11 +45,12 @@ export function FileUpload({ onFileChange, isLoading }: Props) {
 
   return (
     <div
-      className={`min-h-[60vh] rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer flex flex-col items-center justify-center space-y-6 p-8 ${
+      className={cn(
+        "min-h-[60vh] rounded-xl border-2 border-dashed transition-all duration-300 cursor-pointer flex flex-col items-center justify-center space-y-6 p-8",
         isDragOver
           ? "border-blue-500 bg-blue-50 shadow-xl scale-105"
           : "border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50"
-      }`}
+      )}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -55,7 +58,7 @@ export function FileUpload({ onFileChange, isLoading }: Props) {
     >
       <div className="text-center space-y-4">
         <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-          <Upload className={`h-10 w-10 text-blue-600 transition-transform ${isDragOver ? "scale-110" : ""}`} />
+          <Upload className={cn("h-10 w-10 text-blue-600 transition-transform", isDragOver && "scale-110")} />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">

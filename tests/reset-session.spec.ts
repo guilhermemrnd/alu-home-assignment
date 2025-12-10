@@ -72,7 +72,7 @@ test.describe('Reset Session', () => {
     await page.locator('text=Reset Session').click();
 
     // Check back to initial state
-    await expect(page.locator('text=Upload a CSV or XLSX file to begin.')).toBeVisible();
+    await expect(page.locator('text=Upload your product data')).toBeVisible();
     await expect(page.locator('text=Widget A')).not.toBeVisible();
   });
 });

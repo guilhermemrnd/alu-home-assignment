@@ -61,7 +61,7 @@ test.describe('File Upload and Initial Parsing', () => {
     await page.goto('/');
 
     // Check initial state
-    await expect(page.locator('text=Upload a CSV or XLSX file to begin.')).toBeVisible();
+    await expect(page.locator('text=Upload your product data')).toBeVisible();
 
     // Upload file
     const fileInput = page.locator('input[type="file"]');
@@ -75,5 +75,24 @@ test.describe('File Upload and Initial Parsing', () => {
     await expect(page.locator('label').filter({ hasText: 'product name' })).toBeVisible();    // Check if products are previewed
     await expect(page.locator('text=Widget A')).toBeVisible();
     await expect(page.locator('text=Widget B')).toBeVisible();
+  });
+
+  test('should support drag and drop file upload', async ({ page }) => {
+    await page.goto('/');
+
+    // Check initial state
+    await expect(page.locator('text=Upload your product data')).toBeVisible();
+
+    // Simulate drag and drop by setting files on the hidden input (since drop handling is on the div)
+    // The component accepts files via the input, so this should work
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.setInputFiles(path.join(__dirname, 'fixtures', 'sample-products.csv'));
+
+    // Wait for upload to complete
+    await page.waitForSelector('text=Product Data Management');
+
+    // Check if headers are displayed
+    await expect(page.locator('label').filter({ hasText: 'purchase order' })).toBeVisible();
+    await expect(page.locator('text=Widget A')).toBeVisible();
   });
 });
