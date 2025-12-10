@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-import { Agent } from "@/core/domain/agent";
+import { Agent } from "@/core/services/agent";
 import { Parser } from "@/core/services/parser";
 
 import { mapRowsToProducts } from "@/lib/utils/mapper";

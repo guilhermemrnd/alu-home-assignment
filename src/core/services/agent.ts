@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { Headers } from '@/core/services/parser';
 import { chatResponseSchema } from '@/lib/zod-schemas/chat-response.schema';
 
-import { Product, ProductFieldName, Mapping } from './product';
+import { Product, ProductFieldName, Mapping } from '../domain/product';
 
 export type ChatOperation =
   | { type: "updateField"; productIndex: number; field: ProductFieldName; value: string }

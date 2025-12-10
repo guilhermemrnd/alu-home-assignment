@@ -1,0 +1,3 @@
+Purchase Order,Product Name,Country of Origin,Supplier,Supplier Email,Certifications,Status of Certifications,Material Composition,Season,Group ID
+PO001,Widget A,USA,Supplier1,supplier1@example.com,Cert1,Valid,Plastic,Summer,G1
+PO002,Widget B,Canada,Supplier2,supplier2@example.com,Cert2,Expired,Metal,Winter,G2

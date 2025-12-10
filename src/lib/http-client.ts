@@ -1,6 +1,6 @@
 import { Headers, Rows } from "@/core/services/parser";
 import { Product, Mapping } from "@/core/domain/product";
-import { ChatOperation } from "@/core/domain/agent";
+import { ChatOperation } from "@/core/services/agent";
 
 export interface UploadResponse {
   headers: Headers;

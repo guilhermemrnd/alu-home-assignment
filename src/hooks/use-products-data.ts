@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { Headers, Rows } from "@/core/services/parser";
 import { Mapping, Product, ProductFieldName } from "@/core/domain/product";
-import { ChatOperation } from "@/core/domain/agent";
+import { ChatOperation } from "@/core/services/agent";
 import { useSession } from "@/hooks/use-session";
 import { useUpload } from "@/hooks/use-upload";
 import { useChat } from "@/hooks/use-chat";
