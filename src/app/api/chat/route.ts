@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 
-import { Agent } from '@/core/domain/agent';
+import { Agent } from '@/core/services/agent';
 import { Product } from '@/core/domain/product';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

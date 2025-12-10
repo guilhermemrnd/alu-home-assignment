@@ -1,9 +1,11 @@
 "use client";
 
-import { Database, Upload } from "lucide-react";
+import { Database } from "lucide-react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+
+import { cn } from "@/lib/utils/cn";
 
 import { useProductsData } from "@/hooks/use-products-data";
 
@@ -46,7 +48,7 @@ export default function Home() {
               onClick={handleReset}
               variant="destructive"
               size="sm"
-              className="transition-colors hover:bg-red-700"
+              className={cn("transition-colors hover:bg-red-700 cursor-pointer")}
             >
               Reset Session
             </Button>
@@ -54,20 +56,21 @@ export default function Home() {
         </header>
 
         {headers.length === 0 ? (
-          <section className="min-h-[70vh] rounded-xl border-2 border-dashed border-gray-300 bg-white p-8 shadow-lg">
-            <div className="flex h-full flex-col items-center justify-center space-y-6">
-              <div className="text-center">
-                <Upload className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-                <div className="mx-auto max-w-md text-gray-600">
-                  <p className="mb-2">Upload a CSV or XLSX file to begin.</p>
-                  <p className="text-sm">We'll parse headers and preview products.</p>
-                </div>
-                <div className="mt-4">
-                  <FileUpload onFileChange={handleFileChange} isLoading={isUploading} />
+          <section className="min-h-[70vh] relative">
+            <FileUpload onFileChange={handleFileChange} isLoading={isUploading} />
+            {isUploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-xl">
+                <div className="flex items-center space-x-2 text-blue-600">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span>Uploading and processing file...</span>
                 </div>
               </div>
-              {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
-            </div>
+            )}
+            {uploadError && (
+              <div className="mt-4 flex justify-center">
+                <p className="text-sm text-red-600">{uploadError}</p>
+              </div>
+            )}
           </section>
         ) : (
           <section className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg">

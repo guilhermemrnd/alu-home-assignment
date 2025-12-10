@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+import { cn } from "@/lib/utils/cn";
+
 import { ProductFieldName, Mapping } from "@/core/domain/product";
 
 type Props = {
@@ -36,14 +38,14 @@ export function MappingEditor({ headers, mapping, onMappingChange }: Props) {
           {Object.keys(mapping).map((field) => (
             <div
               key={field}
-              className="flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-50"
+              className={cn("flex items-center space-x-2 rounded-md p-2 transition-colors hover:bg-gray-50")}
             >
               <label className="w-32 font-medium text-gray-700">{field.replace(/_/g, " ")}</label>
               <Select
                 value={mapping[field as ProductFieldName] || ""}
                 onValueChange={(value) => handleMappingChange(field, value)}
               >
-                <SelectTrigger className="flex-1">
+                <SelectTrigger className="flex-1 cursor-pointer">
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent>
@@ -58,7 +60,7 @@ export function MappingEditor({ headers, mapping, onMappingChange }: Props) {
                 size="sm"
                 variant="ghost"
                 onClick={() => handleMappingChange(field, "")}
-                className="h-8 w-8 p-1"
+                className="h-8 w-8 cursor-pointer p-1"
               >
                 <X className="h-4 w-4" />
               </Button>

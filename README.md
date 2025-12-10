@@ -1,36 +1,52 @@
 # ALU Home Assignment
 
-A Next.js application for managing product data from spreadsheets with AI-assisted mapping and chat-based editing.
+A Next.js app for AI-assisted product data management from spreadsheets.
+
+## Features
+
+- File upload (CSV/XLSX)
+- AI mapping of columns to fields
+- Data preview and editing
+- Chat-based AI interactions for updates
+- Session persistence via localStorage
+
+## Summary of Your Solution
+
+Upload files, map columns with AI, preview data, and chat to edit via proposed operations. AI is rules-based: proposes JSON operations only, no direct mutations. Ensures safety and determinism.
 
 ## Tech Choices
 
-- **Next.js (App Router, TypeScript)**: For server-side rendering and API routes.
-- **shadcn/ui**: For consistent, accessible UI components.
-- **Tailwind CSS**: For styling, required by shadcn.
-- **zod**: For schema validation, especially for LLM responses.
-- **xlsx (SheetJS)**: For parsing .xlsx files.
-- **papaparse**: For parsing .csv files.
-- **localStorage**: For persisting session data.
-
-## Rules-Based AI Constraint
-
-The AI integration is designed to be rules-based, meaning the LLM never directly mutates data. Instead, it only proposes operations (like updating a field or remapping a column) in a strict JSON format. This ensures:
-
-- Deterministic updates: Operations are applied by the domain layer.
-- Safety: AI cannot invent fields or modify data arbitrarily.
-- Reliability: If the AI output deviates from the schema, it's rejected with a fallback response.
-
-The prompt enforces: "You must respond ONLY with JSON, no prose. You cannot invent fields. You cannot modify data directly. You only propose operations."
+- Next.js (App Router, TypeScript) for SSR and APIs
+- shadcn/ui + Tailwind CSS for UI
+- zod for validation
+- xlsx/papaparse for parsing
+- OpenAI for AI features
+- localStorage for persistence
 
 ## Setup
 
-1. Clone the repository.
-2. Install dependencies: `npm install`
-3. Set up environment variables: Copy `.env.local` and add your OpenAI API key.
-4. Run the development server: `npm run dev`
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Prerequisites
+- Node.js 22.11+
+- npm/yarn
+- OpenAI API key
+
+### Installation
+1. Clone repo
+2. `npm install`
+3. Add `.env.local`, add OPENAI_API_KEY
+4. `npm run dev`
+5. Visit http://localhost:3000
+
+## Testing
+
+Run `npm run test` (Playwright E2E tests).
 
 ## Known Limitations
 
-- No authentication or multi-user support.
-- localStorage is used for persistence, so data is lost on browser clear.
+- No auth/multi-user
+- Data lost on browser clear
+
+## Next Steps
+
+- Add auth and database
+- Enhance AI features

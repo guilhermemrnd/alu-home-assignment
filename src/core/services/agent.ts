@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { Headers } from '@/core/services/parser';
 import { chatResponseSchema } from '@/lib/zod-schemas/chat-response.schema';
 
-import { Product, ProductFieldName, Mapping } from './product';
+import { Product, ProductFieldName, Mapping } from '../domain/product';
 
 export type ChatOperation =
   | { type: "updateField"; productIndex: number; field: ProductFieldName; value: string }
@@ -73,18 +73,27 @@ export class Agent {
       - Respond ONLY with JSON, no prose.
     `;
 
-    const completion = await this.openai.chat.completions.create({
-      model: 'gpt-5-nano',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 1,
-    });
+    const maxRetries = 3;
+    let lastError: any;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const completion = await this.openai.chat.completions.create({
+          model: 'gpt-5-nano',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 1,
+        });
 
-    const responseText = completion.choices[0].message.content;
-    if (!responseText) throw new Error('No response');
+        const responseText = completion.choices[0].message.content;
+        if (!responseText) throw new Error('No response');
 
-    const parsed = JSON.parse(responseText);
-    const validated = chatResponseSchema.parse(parsed);
+        const parsed = JSON.parse(responseText);
+        const validated = chatResponseSchema.parse(parsed);
 
-    return validated;
+        return validated;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError;
   }
 }
