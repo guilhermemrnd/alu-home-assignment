@@ -39,7 +39,8 @@ Upload files, map columns with AI, preview data, and chat to edit via proposed o
 
 ## Testing
 
-Run `npm run test` (Playwright E2E tests).
+1. Install Playwright browsers: `npx playwright install`
+2. Run `npm run test` (Playwright E2E tests).
 
 ## Known Limitations
 
