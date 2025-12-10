@@ -19,6 +19,7 @@ export function useSession(state: State, setState: (updater: (prev: State) => St
       const data: State = JSON.parse(saved);
       setState(() => ({
         ...data,
+        messages: data.messages || [],
         products: (data.products || []).map((p: any) => new Product(p)),
       }));
     }

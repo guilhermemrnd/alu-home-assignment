@@ -29,7 +29,7 @@ export function Chat({ messages, onSendMessage, isLoading }: Props) {
     if (!isLoading) return;
     const interval = setInterval(() => {
       setLoadingIndex((prev) => (prev + 1) % loadingMessages.length);
-    }, 2000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [isLoading]);
 
