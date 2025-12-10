@@ -43,7 +43,7 @@ export function MappingEditor({ headers, mapping, onMappingChange }: Props) {
                 value={mapping[field as ProductFieldName] || ""}
                 onValueChange={(value) => handleMappingChange(field, value)}
               >
-                <SelectTrigger className="flex-1">
+                <SelectTrigger className="flex-1 cursor-pointer">
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent>
@@ -58,7 +58,7 @@ export function MappingEditor({ headers, mapping, onMappingChange }: Props) {
                 size="sm"
                 variant="ghost"
                 onClick={() => handleMappingChange(field, "")}
-                className="h-8 w-8 p-1"
+                className="h-8 w-8 cursor-pointer p-1"
               >
                 <X className="h-4 w-4" />
               </Button>

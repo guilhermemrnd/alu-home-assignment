@@ -1,24 +1,28 @@
 import { useRef, useState } from "react";
 
-import { Headers, Rows } from "@/core/services/parser";
 import { Mapping, Product, ProductFieldName } from "@/core/domain/product";
 import { ChatOperation } from "@/core/services/agent";
+import { Headers, Rows } from "@/core/services/parser";
+
+import { useChat } from "@/hooks/use-chat";
 import { useSession } from "@/hooks/use-session";
 import { useUpload } from "@/hooks/use-upload";
-import { useChat } from "@/hooks/use-chat";
+
 import { mapRowsToProducts } from "@/lib/utils/mapper";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
-function applyOperations(
-  operations: ChatOperation[],
-  products: Product[],
-  mapping: Mapping,
-  rows: Rows,
-  headers: Headers,
-): { products: Product[]; mapping: Mapping } {
-  let nextProducts = products.map((p) => p.clone());
-  let nextMapping = { ...mapping } as Mapping;
+type State = {
+  headers: Headers;
+  mapping: Mapping;
+  rows: Rows;
+  products: Product[];
+  messages: ChatMessage[];
+};
+
+function applyOperationsToState(operations: ChatOperation[], prevState: State): State {
+  let nextProducts = prevState.products.map((p) => p.clone());
+  let nextMapping = { ...prevState.mapping } as Mapping;
 
   for (const op of operations) {
     if (op.type === "updateField") {
@@ -32,24 +36,32 @@ function applyOperations(
   }
 
   // If any remapping happened, recompute products from rows + headers + mapping
-  if (JSON.stringify(nextMapping) !== JSON.stringify(mapping)) {
-    nextProducts = mapRowsToProducts(rows, headers, nextMapping);
+  if (JSON.stringify(nextMapping) !== JSON.stringify(prevState.mapping)) {
+    nextProducts = mapRowsToProducts(prevState.rows, prevState.headers, nextMapping);
   }
 
-  return { products: nextProducts, mapping: nextMapping };
+  return {
+    ...prevState,
+    products: nextProducts,
+    mapping: nextMapping,
+  };
 }
 
+const initialState: State = {
+  headers: [],
+  mapping: {} as Mapping,
+  rows: [],
+  products: [],
+  messages: [],
+};
+
 export function useProductsData() {
-  const [headers, setHeaders] = useState<Headers>([]);
-  const [mapping, setMapping] = useState<Mapping>({} as Mapping);
-  const [rows, setRows] = useState<Rows>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [state, setState] = useState<State>(initialState);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Persist session
-  useSession(headers, setHeaders, mapping, setMapping, rows, setRows, products, setProducts);
+  useSession(state, setState);
 
   const uploadMutation = useUpload();
   const chatMutation = useChat();
@@ -57,49 +69,57 @@ export function useProductsData() {
   const handleFileChange = (file: File) => {
     uploadMutation.mutate(file, {
       onSuccess: (data) => {
-        setHeaders(data.headers);
-        setMapping(data.mapping);
-        setRows(data.rows);
-        setProducts(data.products.map((p) => new Product(p)));
+        setState((prev) => ({
+          ...prev,
+          headers: data.headers,
+          mapping: data.mapping,
+          rows: data.rows,
+          products: data.products.map((p) => new Product(p)),
+        }));
       },
     });
   };
 
   const handleSendMessage = (message: string) => {
-    setMessages((prev) => [...prev, { role: "user", content: message }]);
+    setState((prev) => ({
+      ...prev,
+      messages: [...prev.messages, { role: "user" as const, content: message }],
+    }));
+    
     chatMutation.mutate(
-      { message, products, mapping },
+      { message, products: state.products, mapping: state.mapping },
       {
         onSuccess: (data) => {
-          setMessages((prev) => [...prev, { role: "assistant", content: data.assistant_message }]);
-          const result = applyOperations(
-            data.operations,
-            products,
-            mapping,
-            rows,
-            headers,
-          );
-          setMapping(result.mapping);
-          setProducts(result.products);
+          setState((prev) => {
+            const withAssistantMessage = {
+              ...prev,
+              messages: [
+                ...prev.messages,
+                { role: "assistant" as const, content: data.assistant_message },
+              ],
+            };
+            return applyOperationsToState(data.operations, withAssistantMessage);
+          });
         },
       },
     );
   };
 
   const handleReset = () => {
-    setHeaders([]);
-    setMapping({} as Mapping);
-    setRows([]);
-    setProducts([]);
-    setMessages([]);
+    setState(initialState);
     localStorage.removeItem("session");
   };
 
   const handleMappingChange = (field: string, value: string) => {
-    const newMapping = { ...mapping, [field]: value } as Mapping;
-    setMapping(newMapping);
-    const newProducts = mapRowsToProducts(rows, headers, newMapping);
-    setProducts(newProducts);
+    setState((prev) => {
+      const newMapping = { ...prev.mapping, [field]: value } as Mapping;
+      const newProducts = mapRowsToProducts(prev.rows, prev.headers, newMapping);
+      return {
+        ...prev,
+        mapping: newMapping,
+        products: newProducts,
+      };
+    });
   };
 
   const uploadError = uploadMutation.error?.message || null;
@@ -109,11 +129,11 @@ export function useProductsData() {
 
   return {
     // state
-    headers,
-    mapping,
-    rows,
-    products,
-    messages,
+    headers: state.headers,
+    mapping: state.mapping,
+    rows: state.rows,
+    products: state.products,
+    messages: state.messages,
     // refs
     fileInputRef,
     // handlers

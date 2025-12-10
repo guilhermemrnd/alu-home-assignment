@@ -1,45 +1,36 @@
 import { useEffect } from "react";
 
+import { Mapping, Product } from "@/core/domain/product";
 import { Headers, Rows } from "@/core/services/parser";
-import { Product, Mapping } from "@/core/domain/product";
+import { ChatMessage } from "@/hooks/use-products-data";
 
-interface SessionData {
+type State = {
   headers: Headers;
   mapping: Mapping;
   rows: Rows;
   products: Product[];
-}
+  messages: ChatMessage[];
+};
 
-export function useSession(
-  headers: Headers,
-  setHeaders: (h: Headers) => void,
-  mapping: Mapping,
-  setMapping: (m: Mapping) => void,
-  rows: Rows,
-  setRows: (r: Rows) => void,
-  products: Product[],
-  setProducts: (p: Product[]) => void
-) {
+export function useSession(state: State, setState: (updater: (prev: State) => State) => void) {
   useEffect(() => {
     const saved = localStorage.getItem("session");
     if (saved) {
-      const data: SessionData = JSON.parse(saved);
-      setHeaders(data.headers || []);
-      setMapping(data.mapping || {});
-      setRows(data.rows || []);
-      setProducts((data.products || []).map((p: any) => new Product(p)));
+      const data: State = JSON.parse(saved);
+      setState(() => ({
+        ...data,
+        products: (data.products || []).map((p: any) => new Product(p)),
+      }));
     }
-  }, [setHeaders, setMapping, setRows, setProducts]);
+  }, [setState]);
 
   useEffect(() => {
     localStorage.setItem(
       "session",
       JSON.stringify({
-        headers,
-        mapping,
-        rows,
-        products: products.map(p => p.toObject())
+        ...state,
+        products: state.products.map((p) => p.toObject()),
       }),
     );
-  }, [headers, mapping, rows, products]);
+  }, [state]);
 }
